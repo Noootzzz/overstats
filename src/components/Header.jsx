@@ -1,12 +1,11 @@
-import React from 'react';
 import { Link } from 'react-router-dom'; 
 
 export default function Header() {
     return (
-        <header>
-            <nav>
-                <Link to="/">Home</Link>
-                <Link to="/heroes">Heroes</Link>
+        <header className='mb-5 mt-5'>
+            <nav className='flex justify-center items-center space-x-10'>
+                <Link to="/heroes">Heros</Link>
+                <Link to="/"><img className='w-20' src="./img/bw.png" alt="BlackWatch Logo" /></Link>
                 <Link to="/maps">Maps</Link>
             </nav>
         </header>
