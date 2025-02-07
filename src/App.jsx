@@ -38,7 +38,6 @@ function App() {
     setPlayerData(null)
   }
 
-  // If player page is shown, render PlayerPage
   if (showPlayerPage) {
     return (
       <>
