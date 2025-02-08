@@ -55,9 +55,54 @@ const CompetitiveRanks = ({ playerData }) => {
   );
 };
 
+const HeroCard = ({ title, heroData, heroesInfo }) => {
+  const hero = heroesInfo?.find(h => h.key === heroData?.hero.toLowerCase());
+  
+  return (
+    <div className="bg-gray-800 p-4 rounded-lg">
+      <h3 className="text-xl font-bold mb-2">{title}</h3>
+      <div className="flex items-center">
+        {hero && (
+          <img 
+            src={hero.portrait} 
+            alt={hero.name} 
+            className="w-12 h-12 rounded-full mr-3"
+          />
+        )}
+        <div>
+          <p className="capitalize">{heroData?.hero}</p>
+          <p className="text-gray-400">
+            {title === 'Most Played Hero' 
+              ? `${Math.floor(heroData?.value / 3600)} hours ${Math.floor((heroData?.value % 3600) / 60)} minutes`
+              : `${heroData?.value}%`
+            }
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const PlayerPage = ({ playerData }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [heroStats, setHeroStats] = useState(null);
+  const [heroesInfo, setHeroesInfo] = useState([]);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchHeroesInfo = async () => {
+      try {
+        const response = await fetch('https://overfast-api.tekrop.fr/heroes?locale=en-us');
+        const data = await response.json();
+        setHeroesInfo(data);
+      } catch (err) {
+        setError('Failed to load heroes information');
+        console.error(err);
+      }
+    };
+
+    fetchHeroesInfo();
+  }, []);
 
   useEffect(() => {
     if (playerData) {
@@ -70,7 +115,9 @@ const PlayerPage = ({ playerData }) => {
             ?.filter(hero => hero.value > 0)
             .sort((a, b) => b.value - a.value)[0],
           bestAccuracy: playerData.stats.pc.competitive.heroes_comparisons.weapon_accuracy_best_in_game?.values
-            ?.sort((a, b) => b.value - a.value)[0]
+            ?.sort((a, b) => b.value - a.value)[0],
+          killsPerLife: playerData.stats.pc.competitive.heroes_comparisons.eliminations_per_life?.values
+            ?.sort((a, b) => b.value - a.value)[0],
         };
         setHeroStats(stats);
       }
@@ -81,18 +128,22 @@ const PlayerPage = ({ playerData }) => {
     return <div className="container mx-auto px-4 mt-8 text-center">Loading... please wait.</div>;
   }
 
+  if (error) {
+    return <div className="container mx-auto px-4 mt-8 text-center text-red-500">{error}</div>;
+  }
+
+
   return (
     <div className="w-full flex justify-center items-center">
       <div className="mt-6 w-3/4">
-        <div 
-          className="relative bg-cover bg-center rounded-lg overflow-hidden"
-          style={{
-            backgroundImage: playerData?.summary?.namecard ? `url(${playerData.summary.namecard})` : 'none',
-            minHeight: '200px'
-            
-          }}
-        >
-          <div className="flex items-center gap-4 mb-4 p-4 bg-black bg-opacity-50">
+        <div>
+          <div className="flex items-center gap-4 mb-4 p-4 bg-black bg-opacity-50"
+            style={{
+              backgroundImage: playerData?.summary?.namecard ? `url(${playerData.summary.namecard})` : 'none',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              minHeight: '200px',
+            }}>
             <img 
               src={playerData.summary.avatar} 
               alt={`${playerData.summary.username}'s avatar`} 
@@ -121,35 +172,72 @@ const PlayerPage = ({ playerData }) => {
 
         {heroStats && (
           <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="bg-gray-800 p-4 rounded-lg">
-              <h3 className="text-xl font-bold mb-2">Most Played Hero</h3>
-              <p className="capitalize">{heroStats.mostPlayed?.hero}</p>
-              <p>{Math.floor(heroStats.mostPlayed?.value / 60)} minutes</p>
-            </div>
-
-            <div className="bg-gray-800 p-4 rounded-lg">
-              <h3 className="text-xl font-bold mb-2">Highest Win Rate</h3>
-              <p className="capitalize">{heroStats.highestWinRate?.hero}</p>
-              <p>{heroStats.highestWinRate?.value}%</p>
-            </div>
-
-            <div className="bg-gray-800 p-4 rounded-lg">
-              <h3 className="text-xl font-bold mb-2">Best Accuracy</h3>
-              <p className="capitalize">{heroStats.bestAccuracy?.hero}</p>
-              <p>{heroStats.bestAccuracy?.value}%</p>
-            </div>
+            <HeroCard 
+              title="Most Played Hero" 
+              heroData={heroStats.mostPlayed}
+              heroesInfo={heroesInfo}
+            />
+            <HeroCard 
+              title="Highest Win Rate" 
+              heroData={heroStats.highestWinRate}
+              heroesInfo={heroesInfo}
+            />
+            <HeroCard 
+              title="Best Accuracy" 
+              heroData={heroStats.bestAccuracy}
+              heroesInfo={heroesInfo}
+            />
           </div>
         )}
 
-        <div className="mt-6 bg-gray-800 p-4 rounded-lg">
-          <h3 className="text-xl font-bold mb-4">General Statistics</h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {playerData.stats?.pc?.competitive?.heroes_comparisons?.games_won?.values?.[0] && (
+        <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="bg-gray-800 p-4 rounded-lg">
+            <h3 className="text-xl font-bold mb-4">Career Stats</h3>
+
+            <div className="grid grid-cols-2 gap-4">
               <div>
-                <p className="font-bold">Total Games Won</p>
-                <p>{playerData.stats.pc.competitive.heroes_comparisons.games_won.values[0].value}</p>
+                <p className="font-bold">Games Played</p>
+                <p></p>
               </div>
-            )}
+              <div>
+                <p className="font-bold">Games Won</p>
+                <p></p>
+              </div>
+              <div>
+                <p className="font-bold">Win Rate</p>
+                <p></p>
+              </div>
+              <div>
+                <p className="font-bold">Time Played</p>
+                <p></p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-gray-800 p-4 rounded-lg">
+            <h3 className="text-xl font-bold mb-4">Average Stats</h3>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <p className="font-bold">Eliminations</p>
+                {/*Icon elimination*/}
+                <p></p>
+              </div>
+              <div>
+                <p className="font-bold">Deaths</p>
+                 {/*Icon death*/}
+                <p></p>
+              </div>
+              <div>
+                <p className="font-bold">Healing</p>
+                  {/*Icon heal*/}
+                <p></p>
+              </div>
+              <div>
+                <p className="font-bold">Damage</p>
+                  {/*Icon damage*/}
+                <p></p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -182,6 +270,21 @@ CompetitiveRanks.propTypes = {
   }).isRequired
 };
 
+HeroCard.propTypes = {
+  title: PropTypes.string.isRequired,
+  heroData: PropTypes.shape({
+    hero: PropTypes.string,
+    value: PropTypes.number
+  }),
+  heroesInfo: PropTypes.arrayOf(
+    PropTypes.shape({
+      key: PropTypes.string,
+      name: PropTypes.string,
+      portrait: PropTypes.string
+    })
+  )
+};
+
 PlayerPage.propTypes = {
   playerData: PropTypes.shape({
     summary: PropTypes.shape({
@@ -195,62 +298,36 @@ PlayerPage.propTypes = {
       }),
       competitive: PropTypes.shape({
         pc: PropTypes.shape({
-          support: PropTypes.shape({
-            division: PropTypes.string,
-            tier: PropTypes.number,
-            role_icon: PropTypes.string,
-            rank_icon: PropTypes.string,
-          }),
-          damage: PropTypes.shape({
-            division: PropTypes.string,
-            tier: PropTypes.number,
-            role_icon: PropTypes.string,
-            rank_icon: PropTypes.string,
-          }),
-          tank: PropTypes.shape({
-            division: PropTypes.string,
-            tier: PropTypes.number,
-            role_icon: PropTypes.string,
-            rank_icon: PropTypes.string,
-          }),
+          support: PropTypes.object,
+          damage: PropTypes.object,
+          tank: PropTypes.object,
         }),
       }),
     }),
     stats: PropTypes.shape({
       pc: PropTypes.shape({
         competitive: PropTypes.shape({
+          career_stats: PropTypes.shape({
+            all_heroes: PropTypes.shape({
+              game: PropTypes.object,
+              average: PropTypes.object,
+            }),
+          }),
           heroes_comparisons: PropTypes.shape({
             time_played: PropTypes.shape({
-              values: PropTypes.arrayOf(
-                PropTypes.shape({
-                  hero: PropTypes.string,
-                  value: PropTypes.number,
-                })
-              ),
+              values: PropTypes.array,
             }),
             games_won: PropTypes.shape({
-              values: PropTypes.arrayOf(
-                PropTypes.shape({
-                  hero: PropTypes.string,
-                  value: PropTypes.number,
-                })
-              ),
+              values: PropTypes.array,
             }),
             win_percentage: PropTypes.shape({
-              values: PropTypes.arrayOf(
-                PropTypes.shape({
-                  hero: PropTypes.string,
-                  value: PropTypes.number,
-                })
-              ),
+              values: PropTypes.array,
             }),
             weapon_accuracy_best_in_game: PropTypes.shape({
-              values: PropTypes.arrayOf(
-                PropTypes.shape({
-                  hero: PropTypes.string,
-                  value: PropTypes.number,
-                })
-              ),
+              values: PropTypes.array,
+            }),
+            eliminations_per_life: PropTypes.shape({
+              values: PropTypes.array,
             }),
           }),
         }),
