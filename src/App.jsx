@@ -1,59 +1,36 @@
-import { useState } from 'react'
-import Header from './components/Header'
-import RotatingText from './components/RotatingText'
-import GradientText from './components/GradientText'
-import PlayerPage from './components/PlayerPage'
+import { useState } from 'react'; 
+import Header from './components/Header'; 
+import RotatingText from './components/RotatingText'; 
+import GradientText from './components/GradientText';
 
 function App() {
-  const [playerName, setPlayerName] = useState('')
-  const [playerData, setPlayerData] = useState(null)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(null)
-  const [showPlayerPage, setShowPlayerPage] = useState(false)
-
-  const searchPlayer = async (e) => {
-    e.preventDefault()
-    setLoading(true)
-    setError(null)
-    try {
-      const formattedPlayerName = playerName.replace('#', '-')
-      const response = await fetch(`https://overfast-api.tekrop.fr/players/${formattedPlayerName}`)
-      const data = await response.json()
+  const [playerName, setPlayerName] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  
+  const searchPlayer = async (e) => { 
+    e.preventDefault(); 
+    setLoading(true); 
+    setError(null); 
+    try { 
+      const formattedPlayerName = playerName.replace('#', '-'); 
+      const response = await fetch(`https://overfast-api.tekrop.fr/players/${formattedPlayerName}`); 
+      const data = await response.json();
      
-      if (!response.ok) {
-        throw new Error(data.message || 'Player not found!')
+      if (!response.ok) { 
+        throw new Error(data.message || 'Player not found!'); // Gérer les erreurs 
       }
-     
-      setPlayerData(data)
-      setShowPlayerPage(true)
-    } catch (err) {
-      setError(err.message)
-    } finally {
-      setLoading(false)
-    }
-  }
+      // Rediriger vers la page du joueur avec l'ID dans l'URL
+      // Utilisez un historique ou un environnement router ici pour changer l'URL
+      window.location.href = `/players/${formattedPlayerName}`; // Remplacez par le bon ID
+    } catch (err) { 
+      setError(err.message); // Affiche l’erreur si elle existe 
+    } finally { 
+      setLoading(false); 
+    } 
+  };
 
-  const handleBackToSearch = () => {
-    setShowPlayerPage(false)
-    setPlayerData(null)
-  }
-
-  if (showPlayerPage) {
-    return (
-      <>
-        <Header />
-        <button 
-          onClick={handleBackToSearch}
-          className="absolute top-4 left-4 px-4 py-2 bg-red-700 text-white rounded-lg hover:bg-red-800"
-        >
-          ← Back to Search
-        </button>
-        <PlayerPage playerData={playerData} />
-      </>
-    )
-  }
-
-  // Default search page
+  // Formulaire de recherche du joueur
   return (
     <>
       <Header />
@@ -111,10 +88,10 @@ function App() {
               </div>
             )}
           </form>
-                  </div>
+        </div>
       </main>
     </>
-  )
+  );
 }
 
-export default App
+export default App;

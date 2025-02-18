@@ -3,9 +3,10 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import App from './App';
 import Heroes from './pages/Heroes';
 import Maps from './pages/Maps';
+import PlayerPage from './components/PlayerPage'; 
 import './index.css';
 
-const router = createBrowserRouter ([
+const router = createBrowserRouter([
     {
         path: "/",
         element: <App />,
@@ -21,6 +22,12 @@ const router = createBrowserRouter ([
         element: <Maps />,
         // errorElement: <ErrorPage />,
     },
-])
+    {
+        path: "/players/:playerId",
+        element: <PlayerPage />
+    },
+]);
 
-ReactDOM.createRoot(document.getElementById("root")).render(<RouterProvider router={router} />);
+ReactDOM.createRoot(document.getElementById("root")).render(
+    <RouterProvider router={router} />
+);
