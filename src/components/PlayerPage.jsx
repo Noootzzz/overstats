@@ -3,10 +3,12 @@ import { useEffect, useState } from "react";
 import { useParams } from 'react-router-dom';
 import PlayerStats from './PlayerStats';
 
+/* eslint react/prop-types: 0 */
+
 const RankDisplay = ({ role, roleData }) => {
   return (
     <div className="flex items-center mt-2 bg-gray-800 p-2 rounded-lg hover:bg-gray-700 transition-colors">
-      <div className="flex items-center w-24">
+      <div className="flex items-center w-24 mr-5">
         <img 
           src={roleData?.role_icon || `/roles/${role}.svg`} 
           alt={`${role} icon`} 
@@ -20,13 +22,10 @@ const RankDisplay = ({ role, roleData }) => {
           <img 
             src={roleData.rank_icon} 
             alt="Rank icon" 
-            className="w-8 h-8" 
+            className="w-8 h-auto" 
           />
           <div className="ml-2">
-            <span className="font-semibold text-white capitalize">
-              {roleData.division}
-            </span>
-            <span className="text-gray-400 ml-1">
+            <span className="text-gray-400 ">
               {roleData.tier}
             </span>
           </div>
@@ -44,7 +43,7 @@ const CompetitiveRanks = ({ playerData }) => {
   const roles = ['support', 'damage', 'tank'];
   
   return (
-    <div className="mt-4 space-y-2">
+    <div className="mt-4 w-70 space-y-5">
       <h3 className="text-lg font-semibold mb-3">Competitive Ranks</h3>
       {roles.map(role => (
         <RankDisplay 
