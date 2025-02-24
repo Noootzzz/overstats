@@ -166,15 +166,15 @@ const PlayerPage = () => {
   }
 
   return (
-    <div className="w-full flex justify-center items-center">
-      <div className="mt-6 w-3/4">
+    <div className="w-full flex justify-center items-center rounded">
+      <div className="mt-6 w-3/4 ">
         <div>
-          <div className="flex items-center gap-4 mb-4 p-4 bg-black bg-opacity-50"
+          <div className="flex items-center gap-4 mb-4 p-4 bg-black bg-opacity-50 rounded-lg"
             style={{
               backgroundImage: playerData?.summary?.namecard ? `url(${playerData.summary.namecard})` : 'none',
-              backgroundSize: 'cover',
               backgroundPosition: 'center',
-              minHeight: '200px',
+              backgroundSize: 'cover',
+              
             }}>
             <img 
               src={playerData.summary.avatar} 
