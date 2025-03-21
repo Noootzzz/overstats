@@ -1,10 +1,10 @@
 import PropTypes from 'prop-types';
 import { useEffect, useState } from "react";
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import PlayerStats from './PlayerStats';
-import { Trophy, Clock, Swords, CircleDivide } from 'lucide-react';
+import { Trophy, Clock, Swords, CircleDivide, Home } from 'lucide-react';
 
-/* eslint react/prop-types: 0 */
+/* eslint react/prop-types: 0 */  //NE PAS ENLEVER
 
 const RankDisplay = ({ role, roleData }) => {
   return (
@@ -102,7 +102,7 @@ const BestHistoricalRank = ({ playerData }) => {
     const seasonHistory = playerData.summary?.competitive?.pc?.[role]?.season_history || [];
     if (seasonHistory.length === 0) return null;
     
-    // Sort by tier and division to find the highest rank
+
     const bestRank = [...seasonHistory].sort((a, b) => {
       const tierOrder = ['BRONZE', 'SILVER', 'GOLD', 'PLATINUM', 'DIAMOND', 'MASTER', 'GRANDMASTER', 'TOP_500'];
       return tierOrder.indexOf(b.tier) - tierOrder.indexOf(a.tier);
@@ -154,18 +154,14 @@ const BestHistoricalRank = ({ playerData }) => {
 const HeroDetailedStats = ({ heroData, heroInfo }) => {
   if (!heroData || !heroInfo) return null;
 
-  // Les données viennent directement de l'API maintenant
   const stats = heroData;
   
   if (!stats) return null;
 
-  // Utiliser directement le win_percentage de l'API
   const winRate = stats.win_percentage.toFixed(1);
 
-  // Calculer les éliminations par vie
   const eliminationsPerLife = stats.eliminations_per_life.toFixed(2);
 
-  // Calculer le KDA en utilisant eliminations_per_life
   const kda = stats.eliminations_per_life.toFixed(2);
 
   return (
@@ -261,11 +257,9 @@ const PlayerPage = () => {
       if (!playerId || !selectedHero || !playerData) return;
 
       try {
-        // Accéder aux données des héros depuis les comparaisons
         const competitiveComparisons = playerData.stats?.pc?.competitive?.heroes_comparisons;
         const quickplayComparisons = playerData.stats?.pc?.quickplay?.heroes_comparisons;
         
-        // Chercher les statistiques du héros sélectionné dans les différentes métriques
         const findHeroStats = (comparisons, heroKey) => {
           if (!comparisons) return null;
           
@@ -289,7 +283,6 @@ const PlayerPage = () => {
           };
         };
 
-        // Essayer d'abord les stats compétitives, puis quickplay
         const heroStats = findHeroStats(competitiveComparisons, selectedHero) || 
                          findHeroStats(quickplayComparisons, selectedHero);
 
@@ -371,42 +364,74 @@ const PlayerPage = () => {
   }
 
   return (
-    <div className="w-full min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="relative overflow-hidden rounded-2xl bg-black/40 backdrop-blur-sm border border-gray-700/50">
-          <div className="flex flex-col md:flex-row items-start gap-6 p-6"
+    <div className="w-full min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+        {/* En-tête avec bouton retour */}
+        <div className="flex items-center justify-between">
+          <Link 
+            to="/" 
+            className="group inline-flex items-center gap-2 px-4 py-2 bg-gray-800/90 hover:bg-gray-700/90 text-gray-200 rounded-lg transition-all duration-300 border border-gray-700/50 hover:border-blue-500/50 hover:shadow-lg hover:shadow-blue-500/10"
+          >
+            <Home className="w-5 h-5 transition-transform group-hover:-translate-x-1" />
+            <span>Back to home</span>
+          </Link>
+          
+          {/* Barre de recherche */}
+          <div className="relative w-64">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search heroes..."
+              className="w-full px-4 py-2 bg-gray-900/90 border border-gray-700/50 rounded-lg text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all duration-300"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-200 transition-colors duration-200"
+              >
+                ✕
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Carte du joueur */}
+        <div className="relative overflow-hidden rounded-2xl bg-black/40 backdrop-blur-sm border border-gray-700/50 shadow-xl shadow-black/20 transition-all duration-300 hover:shadow-blue-500/10">
+          <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent z-10"></div>
+          <div className="flex flex-col md:flex-row items-start gap-6 p-8 relative z-20"
             style={{
               backgroundImage: playerData?.summary?.namecard ? `url(${playerData.summary.namecard})` : 'none',
               backgroundPosition: 'center',
               backgroundSize: 'cover',
             }}>
-            <div className="relative">
-              <div className="absolute inset-0 bg-blue-500/20 rounded-full filter blur-lg"></div>
+            <div className="relative group">
+              <div className="absolute inset-0 bg-blue-500/20 rounded-full filter blur-lg transform group-hover:scale-110 transition-transform duration-300"></div>
               <img 
                 src={playerData.summary.avatar} 
                 alt={`${playerData.summary.username}'s avatar`} 
-                className="w-40 h-40 rounded-full object-cover border-4 border-gray-700/50 relative z-10" 
+                className="w-40 h-40 rounded-full object-cover border-4 border-gray-700/50 relative z-10 transform group-hover:scale-105 transition-transform duration-300" 
               />
             </div>
             
-            <div className="flex-1 space-y-4">
+            <div className="flex-1 space-y-6">
               <div>
-                <h2 className="text-3xl font-bold text-gray-200">{playerData.summary.username}</h2>
+                <h2 className="text-4xl font-bold text-gray-200 drop-shadow-lg">{playerData.summary.username}</h2>
                 {playerData.summary.title && (
-                  <p className="text-xl text-gray-400 mt-2">{playerData.summary.title}</p>
+                  <p className="text-xl text-gray-300 mt-2 drop-shadow">{playerData.summary.title}</p>
                 )}
               </div>
 
               <div className="flex items-center">
-                <div className="relative">
-                  <div className="absolute inset-0 bg-purple-500/20 rounded-full filter blur-sm"></div>
+                <div className="relative group">
+                  <div className="absolute inset-0 bg-purple-500/20 rounded-full filter blur-sm transform group-hover:scale-110 transition-transform duration-300"></div>
                   <img 
                     src={playerData.summary.endorsement.frame} 
                     alt="Endorsement level" 
-                    className="w-12 h-12 relative z-10"
+                    className="w-14 h-14 relative z-10 transform group-hover:rotate-180 transition-all duration-500"
                   />
                 </div>
-                <span className="ml-3 text-lg font-medium text-gray-200">Level {playerData.summary.endorsement.level}</span>
+                <span className="ml-4 text-lg font-medium text-gray-200 drop-shadow">Level {playerData.summary.endorsement.level}</span>
               </div>
 
               <CompetitiveRanks playerData={playerData} />
@@ -414,11 +439,13 @@ const PlayerPage = () => {
           </div>
         </div>
 
+        {/* Meilleurs rangs historiques */}
         <BestHistoricalRank playerData={playerData} />
 
+        {/* Statistiques des héros */}
         {heroStats && (
-          <>
-            <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="space-y-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <HeroCard 
                 title="Most Played Hero" 
                 heroData={heroStats.mostPlayed}
@@ -436,118 +463,47 @@ const PlayerPage = () => {
               />
             </div>
             
-            <div className="mt-6">
-              <h3 className="text-xl font-bold mb-4 text-gray-200">Hero Detailed Statistics</h3>
+            <div className="space-y-6">
+              <h3 className="text-2xl font-bold text-gray-200 border-b border-gray-700/50 pb-2">Hero Detailed Statistics</h3>
               
-              {/* Barre de recherche */}
-              <div className="mb-6">
-                <div className="relative max-w-md mx-auto">
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Rechercher un héros..."
-                    className="w-full px-4 py-2 bg-gray-900/90 border border-gray-700/50 rounded-lg text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
-                  />
-                  {searchQuery && (
-                    <button
-                      onClick={() => setSearchQuery('')}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-200"
-                    >
-                      ✕
-                    </button>
-                  )}
-                </div>
-              </div>
-
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {/* Colonne des Tanks */}
-                <div className="bg-gray-800/50 p-4 rounded-xl">
-                  <div className="flex items-center gap-2 mb-4">
-                    <img src="/roles/tank.svg" alt="Tank" className="w-6 h-6" />
-                    <h4 className="text-lg font-semibold text-gray-200">Tanks</h4>
+                {/* Colonnes des héros avec effet de survol amélioré */}
+                {["tank", "damage", "support"].map((role) => (
+                  <div key={role} className="bg-gray-800/50 p-6 rounded-xl backdrop-blur-sm border border-gray-700/50 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/10">
+                    <div className="flex items-center gap-3 mb-6">
+                      <img src={`/img/roles/${role}.svg`} alt={role} className="w-8 h-8" />
+                      <h4 className="text-xl font-semibold text-gray-200 capitalize">{role}</h4>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      {filteredHeroes(role).map(hero => (
+                        <button
+                          key={hero.key}
+                          onClick={() => setSelectedHero(hero.key)}
+                          className={`group p-3 rounded-lg transition-all duration-300 ${
+                            selectedHero === hero.key 
+                              ? 'bg-gray-700/90 border-2 border-blue-500/50 shadow-lg shadow-blue-500/20' 
+                              : 'bg-gray-800/80 hover:bg-gray-700/70 border-2 border-transparent hover:border-gray-600/50'
+                          }`}
+                        >
+                          <div className="relative">
+                            <div className="absolute inset-0 rounded-full filter blur-sm transform group-hover:scale-110 transition-transform duration-300"></div>
+                            <img 
+                              src={hero.portrait} 
+                              alt={hero.name}
+                              className="w-16 h-16 rounded-full mx-auto relative z-10 transform group-hover:scale-105 transition-transform duration-300"
+                            />
+                          </div>
+                          <p className="text-center text-sm text-gray-200 mt-3 font-medium group-hover:text-gray-100">{hero.name}</p>
+                        </button>
+                      ))}
+                    </div>
                   </div>
-                  <div className="grid grid-cols-2 gap-3">
-                    {filteredHeroes("tank").map(hero => (
-                      <button
-                        key={hero.key}
-                        onClick={() => setSelectedHero(hero.key)}
-                        className={`p-2 rounded-lg transition-all duration-300 ${
-                          selectedHero === hero.key 
-                            ? 'bg-gray-700/90 border-2 border-blue-500/50' 
-                            : 'bg-gray-800/80 hover:bg-gray-700/70 border-2 border-transparent'
-                        }`}
-                      >
-                        <img 
-                          src={hero.portrait} 
-                          alt={hero.name}
-                          className="w-12 h-12 rounded-full mx-auto"
-                        />
-                        <p className="text-center text-sm text-gray-200 mt-2">{hero.name}</p>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Colonne des DPS */}
-                <div className="bg-gray-800/50 p-4 rounded-xl">
-                  <div className="flex items-center gap-2 mb-4">
-                    <img src="/roles/damage.svg" alt="Damage" className="w-6 h-6" />
-                    <h4 className="text-lg font-semibold text-gray-200">Damage</h4>
-                  </div>
-                  <div className="grid grid-cols-2 gap-3">
-                    {filteredHeroes("damage").map(hero => (
-                      <button
-                        key={hero.key}
-                        onClick={() => setSelectedHero(hero.key)}
-                        className={`p-2 rounded-lg transition-all duration-300 ${
-                          selectedHero === hero.key 
-                            ? 'bg-gray-700/90 border-2 border-blue-500/50' 
-                            : 'bg-gray-800/80 hover:bg-gray-700/70 border-2 border-transparent'
-                        }`}
-                      >
-                        <img 
-                          src={hero.portrait} 
-                          alt={hero.name}
-                          className="w-12 h-12 rounded-full mx-auto"
-                        />
-                        <p className="text-center text-sm text-gray-200 mt-2">{hero.name}</p>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Colonne des Supports */}
-                <div className="bg-gray-800/50 p-4 rounded-xl">
-                  <div className="flex items-center gap-2 mb-4">
-                    <img src="/roles/support.svg" alt="Support" className="w-6 h-6" />
-                    <h4 className="text-lg font-semibold text-gray-200">Support</h4>
-                  </div>
-                  <div className="grid grid-cols-2 gap-3">
-                    {filteredHeroes("support").map(hero => (
-                      <button
-                        key={hero.key}
-                        onClick={() => setSelectedHero(hero.key)}
-                        className={`p-2 rounded-lg transition-all duration-300 ${
-                          selectedHero === hero.key 
-                            ? 'bg-gray-700/90 border-2 border-blue-500/50' 
-                            : 'bg-gray-800/80 hover:bg-gray-700/70 border-2 border-transparent'
-                        }`}
-                      >
-                        <img 
-                          src={hero.portrait} 
-                          alt={hero.name}
-                          className="w-12 h-12 rounded-full mx-auto"
-                        />
-                        <p className="text-center text-sm text-gray-200 mt-2">{hero.name}</p>
-                      </button>
-                    ))}
-                  </div>
-                </div>
+                ))}
               </div>
               
+              {/* Statistiques détaillées du héros */}
               {selectedHero && heroDetailedStats && (
-                <div className="mt-6">
+                <div className="mt-8 transform transition-all duration-500">
                   <HeroDetailedStats 
                     heroData={heroDetailedStats} 
                     heroInfo={heroesInfo.find(h => h.key === selectedHero)}
@@ -555,9 +511,10 @@ const PlayerPage = () => {
                 </div>
               )}
             </div>
-          </>
+          </div>
         )}
 
+        {/* Statistiques du joueur */}
         {!isLoading && !error && (
           <div className="mt-8">
             <PlayerStats playerId={playerId} />
