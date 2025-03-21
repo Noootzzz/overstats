@@ -7,14 +7,14 @@ import PlayerStats from './PlayerStats';
 
 const RankDisplay = ({ role, roleData }) => {
   return (
-    <div className="flex items-center mt-2 bg-gray-800 p-2 rounded-lg hover:bg-gray-700 transition-colors">
-      <div className="flex items-center w-24 mr-5">
+    <div className="flex items-center mt-2 bg-gray-800/80 p-3 rounded-xl hover:bg-gray-700/90 transition-all duration-300 transform hover:scale-102 backdrop-blur-sm border border-gray-700/50">
+      <div className="flex items-center w-28 mr-5">
         <img 
           src={roleData?.role_icon || `/roles/${role}.svg`} 
           alt={`${role} icon`} 
-          className="w-8 h-8" 
+          className="w-10 h-10 filter drop-shadow-lg" 
         />
-        <span className="ml-2 capitalize text-gray-300">{role}</span>
+        <span className="ml-3 capitalize text-gray-200 font-medium">{role}</span>
       </div>
       
       {roleData ? (
@@ -22,16 +22,16 @@ const RankDisplay = ({ role, roleData }) => {
           <img 
             src={roleData.rank_icon} 
             alt="Rank icon" 
-            className="w-8 h-auto" 
+            className="w-12 h-auto filter drop-shadow-lg" 
           />
-          <div className="ml-2">
-            <span className="text-gray-400 ">
+          <div className="ml-3">
+            <span className="text-gray-200 font-semibold">
               {roleData.tier}
             </span>
           </div>
         </div>
       ) : (
-        <span className="text-gray-400 ml-2">
+        <span className="text-gray-400 ml-3 font-medium">
           Unranked
         </span>
       )}
@@ -43,8 +43,8 @@ const CompetitiveRanks = ({ playerData }) => {
   const roles = ['support', 'damage', 'tank'];
   
   return (
-    <div className="mt-4 w-70 space-y-5">
-      <h3 className="text-lg font-semibold mb-3">Competitive Ranks</h3>
+    <div className="mt-6 w-full space-y-3">
+      <h3 className="text-xl font-bold mb-4 text-gray-200">Competitive Ranks</h3>
       {roles.map(role => (
         <RankDisplay 
           key={role}
@@ -60,19 +60,22 @@ const HeroCard = ({ title, heroData, heroesInfo }) => {
   const hero = heroesInfo?.find(h => h.key === heroData?.hero.toLowerCase());
   
   return (
-    <div className="bg-gray-800 p-4 rounded-lg">
-      <h3 className="text-xl font-bold mb-2">{title}</h3>
+    <div className="bg-gray-800/80 p-6 rounded-xl backdrop-blur-sm border border-gray-700/50 transform transition-all duration-300 hover:scale-105 hover:bg-gray-700/90">
+      <h3 className="text-xl font-bold mb-4 text-gray-200">{title}</h3>
       <div className="flex items-center">
         {hero && (
-          <img 
-            src={hero.portrait} 
-            alt={hero.name} 
-            className="w-12 h-12 rounded-full mr-3"
-          />
+          <div className="relative">
+            <div className="absolute inset-0 bg-blue-500/20 rounded-full filter blur-md"></div>
+            <img 
+              src={hero.portrait} 
+              alt={hero.name} 
+              className="w-16 h-16 rounded-full mr-4 relative z-10 border-2 border-gray-700/50"
+            />
+          </div>
         )}
         <div>
-          <p className="capitalize">{heroData?.hero}</p>
-          <p className="text-gray-400">
+          <p className="capitalize text-lg font-semibold text-gray-200">{heroData?.hero}</p>
+          <p className="text-gray-400 mt-1">
             {title === 'Most Played Hero' 
               ? `${Math.floor(heroData?.value / 3600)} hours ${Math.floor((heroData?.value % 3600) / 60)} minutes`
               : `${heroData?.value}%`
@@ -166,35 +169,42 @@ const PlayerPage = () => {
   }
 
   return (
-    <div className="w-full flex justify-center items-center rounded">
-      <div className="mt-6 w-3/4 ">
-        <div>
-          <div className="flex items-center gap-4 mb-4 p-4 bg-black bg-opacity-50 rounded-lg"
+    <div className="w-full min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="relative overflow-hidden rounded-2xl bg-black/40 backdrop-blur-sm border border-gray-700/50">
+          <div className="flex flex-col md:flex-row items-start gap-6 p-6"
             style={{
               backgroundImage: playerData?.summary?.namecard ? `url(${playerData.summary.namecard})` : 'none',
               backgroundPosition: 'center',
               backgroundSize: 'cover',
-              
             }}>
-            <img 
-              src={playerData.summary.avatar} 
-              alt={`${playerData.summary.username}'s avatar`} 
-              className="w-32 h-32 rounded-full object-cover" 
-            />
+            <div className="relative">
+              <div className="absolute inset-0 bg-blue-500/20 rounded-full filter blur-lg"></div>
+              <img 
+                src={playerData.summary.avatar} 
+                alt={`${playerData.summary.username}'s avatar`} 
+                className="w-40 h-40 rounded-full object-cover border-4 border-gray-700/50 relative z-10" 
+              />
+            </div>
             
-            <div>
-              <h2 className="text-2xl font-bold">{playerData.summary.username}</h2>
-              {playerData.summary.title && (
-                <p className="text-lg text-gray-400">{playerData.summary.title}</p>
-              )}
+            <div className="flex-1 space-y-4">
+              <div>
+                <h2 className="text-3xl font-bold text-gray-200">{playerData.summary.username}</h2>
+                {playerData.summary.title && (
+                  <p className="text-xl text-gray-400 mt-2">{playerData.summary.title}</p>
+                )}
+              </div>
 
-              <div className="flex items-center mt-2">
-                <img 
-                  src={playerData.summary.endorsement.frame} 
-                  alt="Endorsement level" 
-                  className="w-8 h-8"
-                />
-                <span className="ml-2">Level {playerData.summary.endorsement.level}</span>
+              <div className="flex items-center">
+                <div className="relative">
+                  <div className="absolute inset-0 bg-purple-500/20 rounded-full filter blur-sm"></div>
+                  <img 
+                    src={playerData.summary.endorsement.frame} 
+                    alt="Endorsement level" 
+                    className="w-12 h-12 relative z-10"
+                  />
+                </div>
+                <span className="ml-3 text-lg font-medium text-gray-200">Level {playerData.summary.endorsement.level}</span>
               </div>
 
               <CompetitiveRanks playerData={playerData} />
@@ -203,7 +213,7 @@ const PlayerPage = () => {
         </div>
 
         {heroStats && (
-          <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
             <HeroCard 
               title="Most Played Hero" 
               heroData={heroStats.mostPlayed}
@@ -222,9 +232,12 @@ const PlayerPage = () => {
           </div>
         )}
 
-{!isLoading && !error && (
-  <PlayerStats playerId={playerId} />
-)}</div>
+        {!isLoading && !error && (
+          <div className="mt-8">
+            <PlayerStats playerId={playerId} />
+          </div>
+        )}
+      </div>
     </div>
   );
 };
