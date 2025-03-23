@@ -366,7 +366,6 @@ const PlayerPage = () => {
   return (
     <div className="w-full min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
-        {/* En-tête avec bouton retour */}
         <div className="flex items-center justify-between">
           <Link 
             to="/" 
@@ -376,7 +375,6 @@ const PlayerPage = () => {
             <span>Back to home</span>
           </Link>
           
-          {/* Barre de recherche */}
           <div className="relative w-64">
             <input
               type="text"
@@ -396,7 +394,6 @@ const PlayerPage = () => {
           </div>
         </div>
 
-        {/* Carte du joueur */}
         <div className="relative overflow-hidden rounded-2xl bg-black/40 backdrop-blur-sm border border-gray-700/50 shadow-xl shadow-black/20 transition-all duration-300 hover:shadow-blue-500/10">
           <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent z-10"></div>
           <div className="flex flex-col md:flex-row items-start gap-6 p-8 relative z-20"
