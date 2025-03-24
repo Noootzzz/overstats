@@ -23,7 +23,7 @@ function App() {
       if (!response.ok) { 
         throw new Error(data.message || 'Player not found!');
       }
-      const baseUrl = window.location.hostname === 'localhost' ? '' : 'https://overstats-six.vercel.app';
+      const baseUrl = window.location.hostname === 'localhost' ? '' : 'overstats-six.vercel.app';
       window.location.href = `${baseUrl}/players/${formattedPlayerName}`;
     } catch (err) { 
       setError(err.message);
