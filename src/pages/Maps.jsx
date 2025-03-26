@@ -109,7 +109,7 @@ export default function Maps() {
       <Header />
       <Link 
           to="/" 
-          className="group inline-flex items-center gap-2 px-4 py-2 bg-gray-800/90 hover:bg-gray-700/90 text-gray-200 rounded-lg transition-all duration-300 border border-gray-700/50 hover:border-blue-500/50 hover:shadow-lg hover:shadow-blue-500/10 absolute top-4 left-4 z-10"
+          className="group inline-flex items-center gap-2 px-4 py-2 bg-gray-800/90 hover:bg-gray-700/90 text-gray-200 rounded-lg transition-all duration-300 border border-gray-700/50 hover:border-blue-500/50 hover:shadow-lg hover:shadow-blue-500/10 absolute top-4 left-4 z-50"
         >
           <Home className="w-5 h-5 transition-transform group-hover:-translate-x-1" />
           <span>Back to home</span>
@@ -125,8 +125,9 @@ export default function Maps() {
       <main className="container mx-auto px-4 pt-20 pb-12 relative z-10">
         <div className="max-w-4xl mx-auto">
           <h1 className="text-4xl font-bold text-center mb-8 text-gray-200">
-            Overwatch Maps
+            Search for an         <span className="px-2 text-4xl sm:px-2 md:px-3 bg-red-700 text-white overflow-hidden py-0.5 sm:py-1 md:py-2 justify-center rounded-lg">Overwatch Maps</span>            !
           </h1>
+
 
           <div className="mb-8 flex items-center gap-4">
             <input
