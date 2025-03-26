@@ -93,7 +93,7 @@ OverStats is a modern web application designed to track and display Overwatch 2 
 
 ## Deployment
 
-The application is deployed on Vercel and can be accessed at [overstats.vercel.app](https://overstats.vercel.app).
+The application is deployed on Vercel and can be accessed at [overstats.vercel.app](https://overstats-six.vercel.app/).
 
 ## Credits
 
