@@ -3,11 +3,13 @@ import Header from './components/Header';
 import RotatingText from './components/RotatingText'; 
 import GradientText from './components/GradientText';
 import { Search, AlertCircle } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 function App() {
   const [playerName, setPlayerName] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
   
   const searchPlayer = async (e) => { 
     e.preventDefault(); 
@@ -23,8 +25,7 @@ function App() {
       if (!response.ok) { 
         throw new Error(data.message || 'Player not found!');
       }
-      const baseUrl = window.location.hostname === 'localhost' ? '' : 'overstats-six.vercel.app';
-      window.location.href = `${baseUrl}/players/${formattedPlayerName}`;
+      navigate(`/players/${formattedPlayerName}`);
     } catch (err) { 
       setError(err.message);
     } finally { 
@@ -34,17 +35,14 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gray-900 relative overflow-hidden">
-      {/* Effets de lueur */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-[40%] -left-[20%] w-[500px] h-[500px] bg-red-500/20 rounded-full blur-[128px]" />
         <div className="absolute top-[60%] -right-[20%] w-[400px] h-[400px] bg-blue-500/20 rounded-full blur-[128px]" />
         <div className="absolute top-[20%] left-[60%] w-[300px] h-[300px] bg-purple-500/20 rounded-full blur-[96px]" />
       </div>
 
-      {/* Overlay glassmorphism */}
       <div className="absolute inset-0 bg-gray-900/60 backdrop-blur-[2px]" />
 
-      {/* Contenu */}
       <div className="relative z-10">
         <Header />
         <main className="container mx-auto px-4 pt-16 pb-20">
