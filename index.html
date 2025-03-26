@@ -2,9 +2,58 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="icon" type="image/svg+xml" href="img/bw.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + React</title>
+    <title>Tracker for Overwatch - Overstats</title>
+    <script>
+      const phrases = [
+        "Overstats - Tracker for Overwatch",
+        "Best Overwatch Tracker",
+        "Analyze your Overwatch stats",
+        "Explore Overwatch heroes",
+        "Discover Overwatch maps",
+      ];
+      
+      let currentPhraseIndex = 0;
+      let currentCharIndex = 0;
+      let isDeleting = false;
+      let typingSpeed = 150; 
+      let pauseEnd = 1500;   
+      let pauseDelete = 500; 
+      
+      function typeEffect() {
+        const currentPhrase = phrases[currentPhraseIndex];
+        
+        if (isDeleting) {
+          document.title = currentPhrase.substring(0, currentCharIndex) + "▌";
+          currentCharIndex--;
+          typingSpeed = 50; 
+          
+          if (currentCharIndex < 0) {
+            isDeleting = false;
+            currentPhraseIndex = (currentPhraseIndex + 1) % phrases.length;
+            typingSpeed = pauseDelete; 
+          }
+        } else {
+          document.title = currentPhrase.substring(0, currentCharIndex) + "▌";
+          currentCharIndex++;
+          
+          typingSpeed = 100 + Math.random() * 100;
+          
+          if (currentCharIndex > currentPhrase.length) {
+            document.title = currentPhrase; 
+            isDeleting = true;
+            typingSpeed = pauseEnd; 
+          }
+        }
+        
+        setTimeout(typeEffect, typingSpeed);
+      }
+      
+      window.onload = function() {
+        setTimeout(typeEffect, 1000);
+      };
+    </script>
   </head>
   <body>
     <div id="root"></div>
